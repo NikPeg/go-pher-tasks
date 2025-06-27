@@ -47,3 +47,24 @@ func Init(dbFile string) error {
 
 	return nil
 }
+
+// AddTask добавляет новую задачу в базу данных.
+// Возвращает ID созданной задачи.
+func AddTask(task Task) (int64, error) {
+	// SQL-запрос для вставки данных. Используем '?' как плейсхолдеры для безопасности.
+	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)`
+
+	// Выполняем запрос
+	res, err := db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat)
+	if err != nil {
+		return 0, err
+	}
+
+	// Получаем ID последней вставленной записи
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
