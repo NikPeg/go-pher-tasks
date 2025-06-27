@@ -3,12 +3,23 @@ package api
 import (
 	"go1f/pkg/db"
 	"net/http"
-	"log"
+	"strconv"
 )
 
+// APITask - это структура для представления задачи в JSON-ответе API.
+// Поле ID здесь является строкой, как того требуют тесты.
+type APITask struct {
+	ID      string `json:"id"`
+	Date    string `json:"date"`
+	Title   string `json:"title"`
+	Comment string `json:"comment"`
+	Repeat  string `json:"repeat"`
+}
+
 // TasksResponse определяет структуру JSON-ответа для списка задач.
+// Теперь она использует APITask вместо db.Task.
 type TasksResponse struct {
-	Tasks []db.Task `json:"tasks"`
+	Tasks []APITask `json:"tasks"`
 }
 
 // tasksHandler обрабатывает GET-запросы к /api/tasks.
@@ -18,20 +29,29 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Получаем необязательный параметр search из URL
 	searchQuery := r.URL.Query().Get("search")
-
 	const tasksLimit = 50
 
-	// Передаем поисковый запрос в функцию GetTasks
-	tasks, err := db.GetTasks(searchQuery, tasksLimit)
+	// 1. Получаем задачи из БД в "родном" формате (с ID типа int64)
+	dbTasks, err := db.GetTasks(searchQuery, tasksLimit)
 	if err != nil {
-		// Для отладки можно выводить ошибку в лог
-		log.Printf("Error getting tasks: %v", err)
 		writeJSONResponse(w, http.StatusInternalServerError, map[string]string{"error": "failed to get tasks"})
 		return
 	}
 
-	response := TasksResponse{Tasks: tasks}
+	// 2. Конвертируем задачи из формата БД в формат API
+	apiTasks := make([]APITask, 0, len(dbTasks))
+	for _, task := range dbTasks {
+		apiTasks = append(apiTasks, APITask{
+			ID:      strconv.FormatInt(task.ID, 10),
+			Date:    task.Date,
+			Title:   task.Title,
+			Comment: task.Comment,
+			Repeat:  task.Repeat,
+		})
+	}
+
+	// 3. Формируем и отправляем успешный ответ
+	response := TasksResponse{Tasks: apiTasks}
 	writeJSONResponse(w, http.StatusOK, response)
 }
