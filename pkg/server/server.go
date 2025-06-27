@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"go1f/pkg/api"
 )
 
 const defaultPort = "7540"
@@ -16,6 +17,8 @@ func Run() error {
 	if port == "" {
 		port = defaultPort
 	}
+
+    api.Init()
 
 	// Регистрируем файловый сервер для раздачи статических файлов
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
