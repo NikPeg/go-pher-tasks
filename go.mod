@@ -2,6 +2,10 @@ module go-pher-tasks
 
 go 1.23.4
 
+replace go1f => ./
+
+require go1f v0.0.0
+
 require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/stretchr/testify v1.10.0
