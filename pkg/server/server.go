@@ -25,7 +25,5 @@ func Run() error {
 
 	log.Printf("Server starting on http://localhost:%s", port)
 
-	// Эта строка была правильной. Она заставляет сервер слушать на всех сетевых интерфейсах (0.0.0.0),
-	// что необходимо для работы с Docker.
 	return http.ListenAndServe(":"+port, nil)
 }

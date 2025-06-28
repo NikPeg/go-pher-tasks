@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// SecretKey - ключ для подписи токена. В реальном проекте его лучше брать из конфигурации.
+// SecretKey - ключ для подписи токена.
 var SecretKey = []byte("super_secret_key_change_it_in_production")
 
 // Claims определяет структуру полезной нагрузки (payload) нашего JWT.
