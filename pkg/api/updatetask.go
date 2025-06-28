@@ -43,7 +43,7 @@ func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		ID:      id,
 		Date:    req.Date,
 		Title:   req.Title,
-        Comment: req.Comment,
+		Comment: req.Comment,
 		Repeat:  req.Repeat,
 	}
 

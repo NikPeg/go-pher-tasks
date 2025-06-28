@@ -51,7 +51,6 @@ func NextDate(now time.Time, dateStr string, repeat string) (string, error) {
 	return nextDate.Format(DateFormat), nil
 }
 
-
 // --- Функции-обработчики для каждого правила ---
 
 // nextYearlyDate ищет следующую годовую дату.
@@ -100,7 +99,6 @@ func nextWeeklyDate(current, now time.Time, parts []string) (time.Time, error) {
 	}
 	return time.Time{}, errors.New("could not find a matching date for 'w' rule within 2 years")
 }
-
 
 // nextMonthlyDate ищет следующую дату, подходящую под правило дней и месяцев.
 func nextMonthlyDate(current, now time.Time, parts []string) (time.Time, error) {
@@ -206,7 +204,6 @@ func isDayMatch(date time.Time, allowedDays map[int]bool) bool {
 	}
 	return false
 }
-
 
 // --- Обработчик HTTP-запроса (без изменений) ---
 
