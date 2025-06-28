@@ -1,10 +1,10 @@
 package server
 
 import (
+	"go1f/pkg/api"
 	"log"
 	"net/http"
 	"os"
-	"go1f/pkg/api"
 )
 
 const defaultPort = "7540"
@@ -18,13 +18,14 @@ func Run() error {
 		port = defaultPort
 	}
 
-    api.Init()
+	api.Init()
 
 	// Регистрируем файловый сервер для раздачи статических файлов
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
 
 	log.Printf("Server starting on http://localhost:%s", port)
 
-	// Запускаем сервер и возвращаем ошибку, если она возникнет
+	// Эта строка была правильной. Она заставляет сервер слушать на всех сетевых интерфейсах (0.0.0.0),
+	// что необходимо для работы с Docker.
 	return http.ListenAndServe(":"+port, nil)
 }
