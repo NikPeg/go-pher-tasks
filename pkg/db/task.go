@@ -107,3 +107,45 @@ func UpdateTask(task Task) error {
 
 	return nil
 }
+
+// DeleteTask удаляет задачу из БД по её ID.
+func DeleteTask(id string) error {
+	query := `DELETE FROM scheduler WHERE id = ?`
+
+	res, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	// Проверяем, была ли действительно удалена строка.
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows // Задача с таким ID не найдена.
+	}
+
+	return nil
+}
+
+// UpdateTaskDate обновляет только дату у существующей задачи.
+func UpdateTaskDate(id string, newDate string) error {
+	query := `UPDATE scheduler SET date = ? WHERE id = ?`
+
+	res, err := db.Exec(query, newDate, id)
+	if err != nil {
+		return err
+	}
+
+	// Проверяем, была ли действительно обновлена строка.
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows // Задача с таким ID не найдена.
+	}
+
+	return nil
+}
