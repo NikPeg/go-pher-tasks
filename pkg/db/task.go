@@ -1,6 +1,7 @@
 package db
 
 import (
+    "database/sql"
 	"fmt"
 	"time"
 )
@@ -67,4 +68,42 @@ func GetTasks(search string, limit int) ([]Task, error) {
 	}
 
 	return tasks, nil
+}
+
+// GetTask получает одну задачу из БД по её ID.
+func GetTask(id string) (Task, error) {
+	var task Task
+	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?`
+
+	// QueryRow идеально подходит для получения одной записи.
+	err := db.QueryRow(query, id).Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+	if err != nil {
+		// Ошибка sql.ErrNoRows означает, что задача не найдена.
+		// Мы вернем эту ошибку, а API-слой обработает её и выдаст 404.
+		return Task{}, err
+	}
+
+	return task, nil
+}
+
+// UpdateTask обновляет существующую задачу в БД.
+func UpdateTask(task Task) error {
+	query := `UPDATE scheduler SET date = ?, title = ?, comment = ?, repeat = ? WHERE id = ?`
+
+	res, err := db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
+	if err != nil {
+		return err
+	}
+
+	// Проверяем, была ли действительно обновлена строка.
+	// Если нет, значит, задачи с таким ID не существует.
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows // Используем ту же ошибку, что и при поиске, для консистентности.
+	}
+
+	return nil
 }
